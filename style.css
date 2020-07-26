@@ -1,0 +1,13 @@
+body {
+    overflow: hidden;
+    width: 100vw ;
+    height: 100vh;
+    display: flex;
+}
+
+#Canvas1 {
+    flex: 1;
+    background-image: url("9caf5b9918d9813118a9e61d12243da2.png");
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+}
