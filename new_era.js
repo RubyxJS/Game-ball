@@ -81,16 +81,26 @@ GameArea.withCanvasID = function (id, ...otherParameters) {
 };
 
 class Player {
-    constructor(image, { size, position, speed }) {
+    constructor(image, { size, position, restSpeed, jumpSpeed }) {
         this.image = image;
         this.size = size;
         this.position = position;
-        this.speed = speed;
+        this.restSpeed = restSpeed;
+        this.jumpSpeed = jumpSpeed;
+        this.rest();
     }
 
     updatePosition() {
         this.position.x += this.speed.x;
         this.position.y += this.speed.y;
+    }
+    
+    rest() {
+        this.speed = this.restSpeed;
+    }
+    
+    jump() {
+        this.speed = this.jumpSpeed;
     }
 }
 
@@ -129,7 +139,8 @@ const gameArea = GameArea.withCanvasID('Canvas1', 80);
 const player = Player.withImageID('ball', {
     size: new Coordinates(100, 100),
     position: new Coordinates(),
-    speed: new Coordinates(0, 10),
+    restSpeed: new Coordinates(0, 10),
+    jumpSpeed: new Coordinates(0, -10),
 });
 const game = new Game(gameArea, player, 100);
 game.start();
