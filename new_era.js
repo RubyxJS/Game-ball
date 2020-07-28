@@ -80,6 +80,25 @@ GameArea.withCanvasID = function (id, ...otherParameters) {
     return new GameArea(document.getElementById(id), ...otherParameters);
 };
 
+class Animation {
+    constructor( spriteimage, loopDelay ){
+        this.spriteimage = spriteimage;
+        this.loopDelay = loopDelay;
+    }
+    
+    start() {
+        this.loopHandle = setInterval(this.mainLoop.bind(this), this.loopDelay);
+    }
+
+    stop() {
+        clearInterval(this.loopHandle);
+    }
+
+    mainLoop() {
+        
+    }
+}
+
 class Player {
     constructor(image, { size, position, restSpeed, jumpSpeed }) {
         this.image = image;
@@ -89,6 +108,10 @@ class Player {
         this.jumpSpeed = jumpSpeed;
         this.rest();
     }
+
+   loadSprite() {
+
+   }
 
     updatePosition() {
         this.position.x += this.speed.x;
