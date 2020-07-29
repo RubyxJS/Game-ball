@@ -81,9 +81,11 @@ GameArea.withCanvasID = function (id, ...otherParameters) {
 };
 
 class Animation {
-    constructor( spriteimage, loopDelay ){
-        this.spriteimage = spriteimage;
+    constructor({ spriteImage, loopDelay, frameSize, imageGrid }){
+        this.spriteImage = spriteImage;
         this.loopDelay = loopDelay;
+        this.frameSize = frameSize;
+        this.imageGrid = imageGrid;
     }
     
     start() {
