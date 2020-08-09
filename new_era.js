@@ -52,23 +52,28 @@ class GameArea {
     drawImage(image, offset, size) {
         this.context.drawImage(image, offset.x, offset.y, size.x, size.y);
     }
-    
+
+    drawRect(colour, offset, size) {
+        this.context.fillStyle = colour;
+        this.context.fillRect(offset.x, offset.y, size.x, size.y);
+    }
+
     enclose(player) {
         // Left wall
         if (player.position.x < 0) {
             player.position.x = 0;
         }
-    
+
         // Right Wall
         if (player.position.x + player.size.x > this.width) {
             player.position.x = this.width - player.size.x;
         }
-    
+
         // Top wall
         if (player.position.y < 0) {
             player.position.y = 0;
         }
-    
+
         // Bottom Wall
         if (player.position.y + player.size.y > this.height - this.baseline) {
             player.position.y = this.height - player.size.y - this.baseline;
@@ -80,14 +85,46 @@ GameArea.withCanvasID = function (id, ...otherParameters) {
     return new GameArea(document.getElementById(id), ...otherParameters);
 };
 
+class Obstacle {
+    constructor(width, gapStart, gapEnd, colour) {
+        this.width = width;
+        this.gapStart = gapStart;
+        this.gapEnd = gapEnd;
+        this.colour = colour;
+        this.distance = -100;
+    }
+
+    draw(gameArea){
+        gameArea.drawRect(
+            this.colour,
+            new Coordinates(gameArea.width - this.distance, 0),
+            new Coordinates(this.width, this.gapStart)
+        );
+        gameArea.drawRect(
+            this.colour,
+            new Coordinates(gameArea.width - this.distance, this.gapEnd),
+            new Coordinates(this.width, gameArea.height)
+        );
+    }
+
+    updatePosition() {
+    }
+}
+
+Obstacle.buildRandom = function (gameArea, width, gapSize, colour) {
+    const gapStart = randomNumber(gameArea.height - gapSize);
+    const gapEnd = gapStart + gapSize;
+    return new Obstacle(width, gapStart, gapEnd, colour);
+}
+
 class Animation {
-    constructor({ spriteImage, loopDelay, frameSize, imageGrid }){
+    constructor({ spriteImage, loopDelay, frameSize, imageGrid }) {
         this.spriteImage = spriteImage;
         this.loopDelay = loopDelay;
         this.frameSize = frameSize;
         this.imageGrid = imageGrid;
     }
-    
+
     start() {
         this.loopHandle = setInterval(this.mainLoop.bind(this), this.loopDelay);
     }
@@ -97,7 +134,7 @@ class Animation {
     }
 
     mainLoop() {
-        
+
     }
 }
 
@@ -111,19 +148,42 @@ class Player {
         this.rest();
     }
 
-   loadSprite() {
+    draw(gameArea) {
+        gameArea.drawImage(this.image, this.position, this.size);
+    }
 
-   }
+    crashWith(otherobj) {
+        const myleft = this.x;
+        const myright = this.x + (this.width);
+        const mytop = this.y;
+        const mybottom = this.y + (this.height);
+        const otherleft = otherobj.x;
+        const otherright = otherobj.x + (otherobj.width);
+        const othertop = otherobj.y;
+        const otherbottom = otherobj.y + (otherobj.height);
+        const crash = true;
+        if ((mybottom < othertop) ||
+            (mytop > otherbottom) ||
+            (myright < otherleft) ||
+            (myleft > otherright)) {
+            crash = false;
+        }
+        return crash;
+    }
+
+    loadSprite() {
+
+    }
 
     updatePosition() {
         this.position.x += this.speed.x;
         this.position.y += this.speed.y;
     }
-    
+
     rest() {
         this.speed = this.restSpeed;
     }
-    
+
     jump() {
         this.speed = this.jumpSpeed;
     }
@@ -134,10 +194,11 @@ Player.withImageID = function (id, ...otherParameters) {
 }
 
 class Game {
-    constructor(gameArea, player, loopDelay) {
+    constructor(gameArea, player, obstacle, loopDelay) {
         this.gameArea = gameArea;
         this.player = player;
         this.loopDelay = loopDelay;
+        this.obstacle = obstacle;
     }
 
     start() {
@@ -150,13 +211,11 @@ class Game {
 
     mainLoop() {
         this.gameArea.clear();
-        this.drawPlayer();
+        this.player.draw(this.gameArea);
         this.player.updatePosition();
+        this.obstacle.draw(this.gameArea);
+        this.obstacle.updatePosition();
         this.gameArea.enclose(player);
-    }
-
-    drawPlayer() {
-        this.gameArea.drawImage(player.image, player.position, player.size);
     }
 }
 
@@ -167,5 +226,6 @@ const player = Player.withImageID('ball', {
     restSpeed: new Coordinates(0, 10),
     jumpSpeed: new Coordinates(0, -10),
 });
-const game = new Game(gameArea, player, 100);
+const obstacle = Obstacle.buildRandom(gameArea, 10, 200, '#00ff00');
+const game = new Game(gameArea, player, obstacle, 100);
 game.start();
