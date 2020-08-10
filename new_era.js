@@ -94,6 +94,8 @@ class Obstacle {
         this.distance = -100;
     }
 
+    
+
     draw(gameArea){
         gameArea.drawRect(
             this.colour,
@@ -152,9 +154,9 @@ class Player {
         gameArea.drawImage(this.image, this.position, this.size);
     }
 
-    crashWith(otherobj) {
-        const myleft = this.x;
-        const myright = this.x + (this.width);
+    crashWith(obstacle) {
+        const myleft = this.position.x;
+        const myright = this.position.x + (this.width);
         const mytop = this.y;
         const mybottom = this.y + (this.height);
         const otherleft = otherobj.x;
