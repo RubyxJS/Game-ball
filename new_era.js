@@ -214,6 +214,7 @@ class Game {
 
     stop() {
         clearInterval(this.loopHandle);
+        clearInterval(this.obstacleGenerationHandle);
     }
 
     mainLoop() {
