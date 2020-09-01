@@ -112,6 +112,10 @@ class Obstacle {
     updatePosition() {
         this.distance += 10;
     }
+
+    isVisible(gameArea) {
+         this.distance >= gameArea.width + this.width;
+    }
 }
 
 Obstacle.buildRandom = function (gameArea, width, gapSize, colour) {
@@ -218,10 +222,13 @@ class Game {
         this.gameArea.clear();
         this.player.draw(this.gameArea);
         this.player.updatePosition();
-        for (const obstacle of this.obstacles) {
+        for (const [index, obstacle] of this.obstacles.entries()) {
             obstacle.draw(this.gameArea);
             obstacle.updatePosition();
-        }
+            if (!obstacle.isVisible(this.gameArea)) {
+                this.obstacles.splice(index, 1);
+            }
+        } 
         this.gameArea.enclose(player);
     }
 
@@ -238,5 +245,5 @@ const player = Player.withImageID('ball', {
     restSpeed: new Coordinates(0, 10),
     jumpSpeed: new Coordinates(0, -10),
 });
-const game = new Game(gameArea, player, 100, 2999);
+const game = new Game(gameArea, player, 100, 3999);
 game.start();
