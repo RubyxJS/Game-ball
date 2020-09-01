@@ -91,12 +91,12 @@ class Obstacle {
         this.gapStart = gapStart;
         this.gapEnd = gapEnd;
         this.colour = colour;
-        this.distance = -100;
+        this.distance = 0;
     }
 
-    
 
-    draw(gameArea){
+
+    draw(gameArea) {
         gameArea.drawRect(
             this.colour,
             new Coordinates(gameArea.width - this.distance, 0),
@@ -110,6 +110,7 @@ class Obstacle {
     }
 
     updatePosition() {
+        this.distance += 10;
     }
 }
 
@@ -196,15 +197,17 @@ Player.withImageID = function (id, ...otherParameters) {
 }
 
 class Game {
-    constructor(gameArea, player, obstacle, loopDelay) {
+    constructor(gameArea, player, loopDelay, obstacleGenerationDelay) {
         this.gameArea = gameArea;
         this.player = player;
         this.loopDelay = loopDelay;
-        this.obstacle = obstacle;
+        this.obstacleGenerationDelay = obstacleGenerationDelay;
+        this.obstacles = [];
     }
 
     start() {
         this.loopHandle = setInterval(this.mainLoop.bind(this), this.loopDelay);
+        this.obstacleGenerationHandle = setInterval(this.generateObstacle.bind(this), this.obstacleGenerationDelay);
     }
 
     stop() {
@@ -215,9 +218,16 @@ class Game {
         this.gameArea.clear();
         this.player.draw(this.gameArea);
         this.player.updatePosition();
-        this.obstacle.draw(this.gameArea);
-        this.obstacle.updatePosition();
+        for (const obstacle of this.obstacles) {
+            obstacle.draw(this.gameArea);
+            obstacle.updatePosition();
+        }
         this.gameArea.enclose(player);
+    }
+
+    generateObstacle() {
+        const obstacle = Obstacle.buildRandom(gameArea, 50, 200, '#00ff00');
+        this.obstacles.push(obstacle);
     }
 }
 
@@ -228,6 +238,5 @@ const player = Player.withImageID('ball', {
     restSpeed: new Coordinates(0, 10),
     jumpSpeed: new Coordinates(0, -10),
 });
-const obstacle = Obstacle.buildRandom(gameArea, 10, 200, '#00ff00');
-const game = new Game(gameArea, player, obstacle, 100);
+const game = new Game(gameArea, player, 100, 2999);
 game.start();
