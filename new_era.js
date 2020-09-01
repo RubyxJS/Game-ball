@@ -94,8 +94,6 @@ class Obstacle {
         this.distance = 0;
     }
 
-
-
     draw(gameArea) {
         gameArea.drawRect(
             this.colour,
@@ -111,6 +109,10 @@ class Obstacle {
 
     updatePosition() {
         this.distance += 10;
+    }
+
+    isVisible(gameArea) {
+        return this.distance < gameArea.width + this.width;
     }
 }
 
@@ -218,9 +220,12 @@ class Game {
         this.gameArea.clear();
         this.player.draw(this.gameArea);
         this.player.updatePosition();
-        for (const obstacle of this.obstacles) {
+        for (const [index, obstacle] of this.obstacles.entries()) {
             obstacle.draw(this.gameArea);
             obstacle.updatePosition();
+            if (!obstacle.isVisible(this.gameArea)) {
+                this.obstacles.splice(index, 1);
+            }
         }
         this.gameArea.enclose(player);
     }
