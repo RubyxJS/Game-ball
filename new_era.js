@@ -4,15 +4,6 @@ function randomNumber(max) {
 
 const image = document.getElementById('ball');
 
-class Rectangle {
-    constructor(xLeft, yTop, xRight, yBottom) {
-        this.xLeft = xLeft;
-        this.yTop = yTop;
-        this.xRight = xRight;
-        this.yBottom = yBottom;
-    }
-}
-
 class Coordinates {
     constructor(x, y) {
         this.x = x || 0;
@@ -157,28 +148,24 @@ class Player {
         gameArea.drawImage(this.image, this.position, this.size);
     }
 
-    crashWith(obstacle) {
-        const myleft = this.position.x;
-        const myright = this.position.x + (this.width);
-        const mytop = this.y;
-        const mybottom = this.y + (this.height);
-        const otherleft = otherobj.x;
-        const otherright = otherobj.x + (otherobj.width);
-        const othertop = otherobj.y;
-        const otherbottom = otherobj.y + (otherobj.height);
-        const crash = true;
-        if ((mybottom < othertop) ||
-            (mytop > otherbottom) ||
-            (myright < otherleft) ||
-            (myleft > otherright)) {
-            crash = false;
-        }
-        return crash;
-    }
-
-    loadSprite() {
-
-    }
+    // crashWith(obstacle) {
+    //     const myleft = this.position.x;
+    //     const myright = this.position.x + (this.width);
+    //     const mytop = this.y;
+    //     const mybottom = this.y + (this.height);
+    //     const otherleft = otherobj.x;
+    //     const otherright = otherobj.x + (otherobj.width);
+    //     const othertop = otherobj.y;
+    //     const otherbottom = otherobj.y + (otherobj.height);
+    //     const crash = true;
+    //     if ((mybottom < othertop) ||
+    //         (mytop > otherbottom) ||
+    //         (myright < otherleft) ||
+    //         (myleft > otherright)) {
+    //         crash = false;
+    //     }
+    //     return crash;
+    // }
 
     updatePosition() {
         this.position.x += this.speed.x;
@@ -234,6 +221,32 @@ class Game {
     generateObstacle() {
         const obstacle = Obstacle.buildRandom(gameArea, 50, 200, '#00ff00');
         this.obstacles.push(obstacle);
+    }
+}
+
+class Controller {
+    constructor(player) {
+        this.player = player;
+        this.keyPressedAlready = false;
+        this.eventHandlers = {};
+    }
+
+    attach() {
+        this.eventHandlers.keydown = this.keydown.bind(this);
+        addEventListener('keydown', this.eventHandlers.keydown);
+    }
+
+    detach() {
+        for (const [eventType, handler] of Object.entries(this.eventHandlers)) {
+            removeEventListener(eventType, handler);
+        }
+    }
+
+    keydown(event) {
+        if (this.keyPressedAlready) return;
+
+        this.keyPressedAlready = true;
+        player.jump();
     }
 }
 
